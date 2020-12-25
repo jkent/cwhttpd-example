@@ -1,0 +1,2 @@
+filters:
+    '*': [cache, gzip, no-preprocessing]

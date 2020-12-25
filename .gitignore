@@ -1,0 +1,8 @@
+build/
+html/espfs.paths
+node_modules/
+core
+package-lock.json
+sdkconfig
+sdkconfig.old
+wifi_settings.h
