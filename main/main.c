@@ -25,11 +25,13 @@ extern const size_t prvtkey_der_len;
 static const ehttpd_route_t routes[] = {
     EHTTPD_ROUTE_WS("/websocket/ws.cgi", ws_demo_connect),
     EHTTPD_ROUTE_WS("/websocket/echo.cgi", ws_echo_connect),
-//#if defined(CONFIG_IDF_TARGET_ESP8266) || defined(ESP_PLATFORM)
-//    EHTTPD_ROUTE_FS("*", "/espfs/"),
-//#else
-//    EHTTPD_ROUTE_FS("*", "html/"),
-//#endif
+    EHTTPD_ROUTE_FS_PATH("/espfs/*", "/espfs/"),
+#if defined(CONFIG_IDF_TARGET_ESP8266) || defined(ESP_PLATFORM)
+    EHTTPD_ROUTE_FS_PATH("/sdcard/*", "/sdcard/"),
+    EHTTPD_ROUTE_FS_PATH("/root/*", "/"),
+#else
+    EHTTPD_ROUTE_FS_PATH("/html/*", "html/"),
+#endif
     EHTTPD_ROUTE_ESPFS("*"),
     EHTTPD_ROUTE("*", ehttpd_route_espfs_index),
     EHTTPD_ROUTE_END()

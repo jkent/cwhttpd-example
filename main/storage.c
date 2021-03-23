@@ -46,6 +46,7 @@ bool storage_init(void)
 #if defined(CONFIG_IDF_TARGET_ESP8266) || defined(ESP_PLATFORM)
     esp_vfs_espfs_conf_t vfs_conf = {
         .base_path = "/espfs",
+        .overlay_path = "/sdcard",
         .fs = espfs,
         .max_files = 2,
     };
