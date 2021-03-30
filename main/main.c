@@ -24,17 +24,19 @@ extern const size_t prvtkey_der_len;
 
 void httpd_init(void)
 {
-    ehttpd_inst_t *inst = ehttpd_init("0.0.0.0:8080", NULL, 2,
-            EHTTPD_FLAG_NONE);
+#if defined(CONFIG_IDF_TARGET_ESP8266) || defined(ESP_PLATFORM)
+    ehttpd_inst_t *inst = ehttpd_init(NULL, EHTTPD_FLAG_NONE);
+#else
+    ehttpd_inst_t *inst = ehttpd_init("0.0.0.0:8080", EHTTPD_FLAG_NONE);
+#endif
     inst->espfs = espfs;
-
     ehttpd_route_append(inst, "/websocket/ws.cgi",
-            ehttpd_route_websocket, 1, ws_demo_connect);
+            ehttpd_route_ws, 1, ws_demo_handler);
     ehttpd_route_append(inst, "/websocket/echo.cgi",
-            ehttpd_route_websocket, 1, ws_echo_connect);
+            ehttpd_route_ws, 1, ws_echo_handler);
+#if defined(CONFIG_IDF_TARGET_ESP8266) || defined(ESP_PLATFORM)
     ehttpd_route_append(inst, "/espfs/*",
             ehttpd_route_fs_get, 1, "/espfs/");
-#if defined(CONFIG_IDF_TARGET_ESP8266) || defined(ESP_PLATFORM)
     ehttpd_route_append(inst, "/sdcard/*",
             ehttpd_route_fs_get, 1, "/sdcard/");
     ehttpd_route_append(inst, "/root/*",
@@ -47,39 +49,42 @@ void httpd_init(void)
             ehttpd_route_espfs_get, 0, NULL);
     ehttpd_route_append(inst, "*",
             ehttpd_route_espfs_index, 0, NULL);
-    ehttpd_start(inst);
     ehttpd_thread_create(ws_broadcast_task, inst, NULL);
+    ehttpd_start(inst);
 
 #if defined(CONFIG_EHTTPD_TLS_MBEDTLS) || defined(CONFIG_EHTTPD_TLS_OPENSSL)
-    ehttpd_inst_t *ssl_inst = ehttpd_init("0.0.0.0:8443", NULL, 2,
-            EHTTPD_FLAG_TLS);
-    ssl_inst->espfs = espfs;
-    ehttpd_route_append(ssl_inst, "/websocket/ws.cgi",
-            ehttpd_route_websocket, 1, ws_demo_connect);
-    ehttpd_route_append(ssl_inst, "/websocket/echo.cgi",
-            ehttpd_route_websocket, 1, ws_echo_connect);
-    ehttpd_route_append(ssl_inst, "/espfs/*",
+#if defined(CONFIG_IDF_TARGET_ESP8266) || defined(ESP_PLATFORM)
+    ehttpd_inst_t *tls_inst = ehttpd_init(NULL, EHTTPD_FLAG_TLS);
+#else
+    ehttpd_inst_t *tls_inst = ehttpd_init("0.0.0.0:8443", EHTTPD_FLAG_TLS);
+#endif
+    tls_inst->espfs = espfs;
+    ehttpd_set_cert_and_key(tls_inst, cacert_der, cacert_der_len, prvtkey_der,
+            prvtkey_der_len);
+    ehttpd_route_append(tls_inst, "/websocket/ws.cgi",
+            ehttpd_route_ws, 1, ws_demo_handler);
+    ehttpd_route_append(tls_inst, "/websocket/echo.cgi",
+            ehttpd_route_ws, 1, ws_echo_handler);
+    ehttpd_route_append(tls_inst, "/espfs/*",
             ehttpd_route_fs_get, 1, "/espfs/");
 #if defined(CONFIG_IDF_TARGET_ESP8266) || defined(ESP_PLATFORM)
-    ehttpd_route_append(ssl_inst, "/sdcard/*",
+    ehttpd_route_append(tls_inst, "/sdcard/*",
             ehttpd_route_fs_get, 1, "/sdcard/");
-    ehttpd_route_append(ssl_inst, "/root/*",
+    ehttpd_route_append(tls_inst, "/root/*",
             ehttpd_route_fs_get, 1, "/");
 #else
-    ehttpd_route_append(ssl_inst, "/html/*",
+    ehttpd_route_append(tls_inst, "/html/*",
             ehttpd_route_fs_get, 1, "html/");
 #endif
-    ehttpd_route_append(ssl_inst, "*",
+    ehttpd_route_append(tls_inst, "*",
             ehttpd_route_espfs_get, 0, NULL);
-    ehttpd_route_append(ssl_inst, "*",
+    ehttpd_route_append(tls_inst, "*",
             ehttpd_route_espfs_index, 0, NULL);
-    ehttpd_set_cert_and_key(ssl_inst, cacert_der, cacert_der_len, prvtkey_der,
-            prvtkey_der_len);
-    ehttpd_start(ssl_inst);
-    ehttpd_thread_create(ws_broadcast_task, ssl_inst, NULL);
+    ehttpd_thread_create(ws_broadcast_task, tls_inst, NULL);
+    ehttpd_start(tls_inst);
 #endif
 
-    ehttpd_captdns_start(inst, "0.0.0.0:53");
+    ehttpd_captdns_start("0.0.0.0:53");
 }
 
 #if defined(CONFIG_IDF_TARGET_ESP8266) || defined(ESP_PLATFORM)

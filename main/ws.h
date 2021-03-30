@@ -8,5 +8,5 @@
 
 
 void ws_broadcast_task(void *arg);
-void ws_demo_connect(ehttpd_ws_t *ws);
-void ws_echo_connect(ehttpd_ws_t *ws);
+void ws_demo_handler(ehttpd_ws_t *ws);
+void ws_echo_handler(ehttpd_ws_t *ws);

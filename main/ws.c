@@ -21,39 +21,42 @@ void ws_broadcast_task(void *arg)
     while (1) {
         size_t ctr = (size_t) inst->user++;
         sprintf(buf, "Up for %d minutes %d seconds!\n", ctr / 60, ctr % 60);
-        ehttpd_ws_broadcast(inst, "/websocket/ws.cgi", (uint8_t *) buf, strlen(buf), EHTTPD_WS_FLAG_NONE);
+        ehttpd_ws_broadcast(inst, "/websocket/ws.cgi", (uint8_t *) buf,
+                strlen(buf), EHTTPD_WS_FLAG_NONE);
         ehttpd_delay_ms(1000);
     }
 }
 
-// On reception of a message, send "You sent: " plus whatever the other side sent
-static void ws_demo_recv(ehttpd_ws_t *ws, const uint8_t *buf, int len, ehttpd_ws_flags_t flags)
-{
-    char reply[128];
-
-    strcpy(reply, "You sent: ");
-    int i = strlen(reply);
-    len = (len > sizeof(reply) + i + 1) ? (sizeof(reply) - i - 1) : len;
-    memcpy(reply + i, buf, len);
-    reply[len] = 0;
-    ehttpd_ws_send(ws, buf, len, EHTTPD_WS_FLAG_NONE);
-}
-
 // Websocket connected. Install reception handler and send welcome message.
-void ws_demo_connect(ehttpd_ws_t *ws)
+void ws_demo_handler(ehttpd_ws_t *ws)
 {
-    ws->recv_cb = ws_demo_recv;
-    ehttpd_ws_send(ws, (uint8_t *) "Hi, Websocket!", 14, EHTTPD_WS_FLAG_NONE);
+    char buf[128];
+    char *p;
+
+    ehttpd_ws_send(ws, "Hi, Websocket!", 14, EHTTPD_WS_FLAG_NONE);
+
+    strcpy(buf, "You sent: ");
+    p = buf + strlen(buf);
+
+    while (true) {
+        ssize_t ret = ehttpd_ws_recv(ws, p, sizeof(buf) - (p - buf));
+        if (ret <= 0) {
+            break;
+        }
+        ehttpd_ws_send(ws, buf, ret + (p - buf), EHTTPD_WS_FLAG_NONE);
+    }
 }
 
-// On reception of a message, echo it back verbatim
-static void ws_echo_recv(ehttpd_ws_t *ws, const uint8_t *buf, int len, ehttpd_ws_flags_t flags)
+// Echo websocket
+void ws_echo_handler(ehttpd_ws_t *ws)
 {
-    ehttpd_ws_send(ws, buf, len, flags);
-}
+    char buf[128];
 
-// Echo websocket. Install reception handler.
-void ws_echo_connect(ehttpd_ws_t *ws)
-{
-    ws->recv_cb = ws_echo_recv;
+    while (true) {
+        ssize_t ret = ehttpd_ws_recv(ws, buf, sizeof(buf));
+        if (ret <= 0) {
+            break;
+        }
+        ehttpd_ws_send(ws, buf, ret, EHTTPD_WS_FLAG_NONE);
+    }
 }
