@@ -4,9 +4,9 @@
 
 #pragma once
 
-#include "libesphttpd/ws.h"
+#include "cwhttpd/ws.h"
 
 
 void ws_broadcast_task(void *arg);
-void ws_demo_handler(ehttpd_ws_t *ws);
-void ws_echo_handler(ehttpd_ws_t *ws);
+void ws_demo_handler(cwhttpd_ws_t *ws);
+void ws_echo_handler(cwhttpd_ws_t *ws);

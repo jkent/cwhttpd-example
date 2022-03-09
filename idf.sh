@@ -8,7 +8,7 @@ if [ -f /.dockerenv ]; then
     adduser --uid $uid --gid $gid --disabled-password --gecos "" user
     adduser user dialout
     adduser user tty
-    pip install -r components/libespfs/requirements.txt
+    pip install -r components/frogfs/requirements.txt
     su -c "export PATH=$PATH; idf.py $*" user
 else
     args=("$@")

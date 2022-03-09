@@ -1,6 +1,7 @@
 build/
 html/espfs.paths
 node_modules/
+standalone/
 core
 package-lock.json
 sdkconfig

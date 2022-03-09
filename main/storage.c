@@ -1,9 +1,9 @@
 #include "storage.h"
 
-#include "libespfs/espfs.h"
+#include "frogfs/frogfs.h"
 
-#if defined(CONFIG_IDF_TARGET_ESP8266) || defined(ESP_PLATFORM)
-# include "libespfs/vfs.h"
+#if defined(ESP_PLATFORM)
+# include "frogfs/vfs.h"
 # include <driver/gpio.h>
 # include <esp_err.h>
 # include <esp_vfs_fat.h>
@@ -19,9 +19,9 @@
 #include <stdint.h>
 
 
-extern const uint8_t espfs_bin[];
+extern const uint8_t frogfs_bin[];
 
-espfs_fs_t* espfs;
+frogfs_fs_t* frogfs;
 
 #if defined(ESP_PLATFORM)
 sdmmc_card_t* sdcard;
@@ -29,28 +29,28 @@ sdmmc_card_t* sdcard;
 
 bool storage_init(void)
 {
-#if defined(CONFIG_IDF_TARGET_ESP8266) || defined(ESP_PLATFORM)
+#if defined(ESP_PLATFORM)
     ESP_ERROR_CHECK(nvs_flash_init());
 #endif
 
-    espfs_config_t espfs_config = {
+    frogfs_config_t frogfs_config = {
 #if defined(ESP_PLATFORM)
-        .part_label = "espfs",
+        .part_label = "frogfs",
 #else
-        .addr = espfs_bin,
+        .addr = frogfs_bin,
 #endif
     };
-    espfs = espfs_init(&espfs_config);
-    assert(espfs != NULL);
+    frogfs = frogfs_init(&frogfs_config);
+    assert(frogfs != NULL);
 
-#if defined(CONFIG_IDF_TARGET_ESP8266) || defined(ESP_PLATFORM)
-    esp_vfs_espfs_conf_t vfs_conf = {
-        .base_path = "/espfs",
+#if defined(ESP_PLATFORM)
+    esp_vfs_frogfs_conf_t vfs_conf = {
+        .base_path = "/frogfs",
         .overlay_path = "/sdcard",
-        .fs = espfs,
+        .fs = frogfs,
         .max_files = 2,
     };
-    ESP_ERROR_CHECK(esp_vfs_espfs_register(&vfs_conf));
+    ESP_ERROR_CHECK(esp_vfs_frogfs_register(&vfs_conf));
 #endif
 
 #if defined(ESP_PLATFORM)

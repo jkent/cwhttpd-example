@@ -3,9 +3,9 @@
         {
             "name": "Linux",
             "includePath": [
-                "${workspaceFolder}/components/libesphttpd/include",
-                "${workspaceFolder}/components/libespfs/include",
-                "${workspaceFolder}/components/libespfs/third-party/heatshrink"
+                "${workspaceFolder}/components/cwhttpd/include",
+                "${workspaceFolder}/components/frogfs/include",
+                "${workspaceFolder}/components/frogfs/third-party/heatshrink"
             ],
             "defines": [
                 "__ESP_FILE__=NULL",
@@ -21,9 +21,9 @@
         {
             "name": "ESP8266",
             "includePath": [
-                "${workspaceFolder}/components/libesphttpd/include",
-                "${workspaceFolder}/components/libespfs/include",
-                "${workspaceFolder}/components/libespfs/third-party/heatshrink",
+                "${workspaceFolder}/components/cwhttpd/include",
+                "${workspaceFolder}/components/frogfs/include",
+                "${workspaceFolder}/components/frogfs/third-party/heatshrink",
                 "${ESP8266_RTOS_SDK}/components/**"
             ],
             "defines": [
@@ -31,8 +31,8 @@
                 "VSCODE=1",
                 "FREERTOS=1",
                 "CONFIG_IDF_TARGET_ESP8266=y",
-                "CONFIG_EHTTPD_TLS_MBEDTLS=y",
-                "CONFIG_ESPFS_USE_HEATSHRINK=y"
+                "CONFIG_CWHTTPD_MBEDTLS=y",
+                "CONFIG_FROGFS_USE_HEATSHRINK=y"
             ],
             "compilerPath": "/usr/bin/gcc",
             "cStandard": "gnu17",
@@ -42,9 +42,9 @@
         {
             "name": "ESP32",
             "includePath": [
-                "${workspaceFolder}/components/libesphttpd/include",
-                "${workspaceFolder}/components/libespfs/include",
-                "${workspaceFolder}/components/libespfs/third-party/heatshrink",
+                "${workspaceFolder}/components/cwhttpd/include",
+                "${workspaceFolder}/components/frogfs/include",
+                "${workspaceFolder}/components/frogfs/third-party/heatshrink",
                 "${ESP_IDF}/components/**"
             ],
             "defines": [
@@ -54,8 +54,8 @@
                 "FREERTOS=1",
                 "CONFIG_IDF_TARGET_ESP32=y",
                 "CONFIG_ENABLE_FLASH_MMAP=y",
-                "CONFIG_EHTTPD_TLS_MBEDTLS=y",
-                "CONFIG_ESPFS_USE_HEATSHRINK=y"
+                "CONFIG_CWHTTPD_MBEDTLS=y",
+                "CONFIG_FROGFS_USE_HEATSHRINK=y"
             ],
             "compilerPath": "/usr/bin/gcc",
             "cStandard": "gnu17",
