@@ -29,7 +29,6 @@ if(NOT ESP_PLATFORM)
     add_subdirectory(components/cwhttpd)
 
     find_library(RT_LIBRARY rt)
-    find_library(BSD_LIBRARY bsd)
     find_package(Threads)
     find_package(MbedTLS)
 
