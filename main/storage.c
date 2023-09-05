@@ -1,6 +1,7 @@
 #include "storage.h"
 
 #include "frogfs/frogfs.h"
+#include "frogfs/vfs.h"
 
 #if defined(ESP_PLATFORM)
 # include "frogfs/vfs.h"
@@ -44,13 +45,12 @@ bool storage_init(void)
     assert(frogfs != NULL);
 
 #if defined(ESP_PLATFORM)
-    esp_vfs_frogfs_conf_t vfs_conf = {
+    frogfs_vfs_conf_t vfs_conf = {
         .base_path = "/frogfs",
-        .overlay_path = "/sdcard",
         .fs = frogfs,
         .max_files = 2,
     };
-    ESP_ERROR_CHECK(esp_vfs_frogfs_register(&vfs_conf));
+    ESP_ERROR_CHECK(frogfs_vfs_register(&vfs_conf));
 #endif
 
 #if defined(ESP_PLATFORM)

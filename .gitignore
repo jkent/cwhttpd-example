@@ -7,3 +7,4 @@ package-lock.json
 sdkconfig
 sdkconfig.old
 wifi_settings.h
+managed_components/
