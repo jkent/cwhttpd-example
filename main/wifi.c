@@ -1,4 +1,3 @@
-#include "../wifi_settings.h"
 #include "wifi.h"
 
 #include <esp_err.h>
@@ -10,7 +9,7 @@
 #include <freertos/event_groups.h>
 
 #include <string.h>
-
+#include <sdkconfig.h> // for CONFIG_EXAMPLE_WIFI_SSID 
 
 static EventGroupHandle_t s_wifi_event_group;
 #define WIFI_CONNECTED_BIT BIT0
@@ -63,8 +62,8 @@ esp_err_t wifi_init(void)
 
     wifi_config_t wifi_config = {
         .sta = {
-            .ssid = WIFI_SSID,
-            .password = WIFI_PASSWORD,
+            .ssid = CONFIG_EXAMPLE_WIFI_SSID,
+            .password = CONFIG_EXAMPLE_WIFI_PASSWORD,
         },
     };
 
